@@ -37,7 +37,7 @@ Status: implemented at the top level.
 | `Popup` | Implemented, needs tests | Portal children, open/close events, style/class updates, position updates. |
 | `Source` | Implemented, needs tests | GeoJSON/image/vector update paths, cleanup, style reload recreation. |
 | `Layer` | Implemented, needs tests | Source inheritance, paint/layout/filter updates, ordering, cleanup. |
-| Controlled camera | Partial | `viewState`, `initialViewState`, camera prop changes, camera event `viewState`. |
+| Controlled camera | Core wrapper behavior tested | Add Solid component-level tests and a controlled-map prototype example. |
 | Interactive events | Partial | `interactiveLayerIds`, queried features, hover enter/leave transitions. |
 | Style components | Partial | `light`, `terrain`, `projection`, `sky`, and style reload behavior. |
 | Map reuse | Pending | `reuseMaps`, recycled container children, restored props and initial camera. |
@@ -48,6 +48,9 @@ Status: implemented at the top level.
 - Unit tests for framework-neutral utilities.
 - jsdom component tests with fake MapLibre instances for Solid lifecycle,
   context, portals, and declarative style graph behavior.
+- Direct wrapper tests for controlled camera initialization, prop-driven camera
+  updates, resize behavior, internal update suppression, and camera event
+  `viewState`.
 - Browser smoke checks with Playwright CLI for the prototype app.
 - Future browser tests for feature picking and controlled camera behavior once
   those surfaces are complete.
