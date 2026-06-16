@@ -1,4 +1,4 @@
-# Changelog
+# @proyecto-viviana/solidjs-maplibre
 
 ## 0.1.0
 

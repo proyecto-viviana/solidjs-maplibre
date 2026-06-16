@@ -1,4 +1,4 @@
-# solidjs-maplibre
+# @proyecto-viviana/solidjs-maplibre
 
 SolidJS components for MapLibre GL JS.
 
@@ -9,7 +9,7 @@ uses Solid lifecycle, context, and JSX semantics.
 ## Install
 
 ```sh
-pnpm add solidjs-maplibre maplibre-gl
+pnpm add @proyecto-viviana/solidjs-maplibre maplibre-gl
 ```
 
 `solid-js` and `maplibre-gl` are peer dependencies. Import the MapLibre CSS once
@@ -22,7 +22,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 ## Basic Usage
 
 ```tsx
-import {Map, NavigationControl, ScaleControl} from 'solidjs-maplibre';
+import {Map, NavigationControl, ScaleControl} from '@proyecto-viviana/solidjs-maplibre';
 
 export function App() {
   return (
@@ -46,7 +46,7 @@ export function App() {
 
 ```tsx
 import {createSignal} from 'solid-js';
-import {Map, type ViewState} from 'solidjs-maplibre';
+import {Map, type ViewState} from '@proyecto-viviana/solidjs-maplibre';
 
 export function ControlledMap() {
   const [viewState, setViewState] = createSignal<ViewState>({
@@ -71,7 +71,12 @@ export function ControlledMap() {
 ## Declarative Data
 
 ```tsx
-import {Layer, Map, Source, type LayerSpecification} from 'solidjs-maplibre';
+import {
+  Layer,
+  Map,
+  Source,
+  type LayerSpecification
+} from '@proyecto-viviana/solidjs-maplibre';
 
 const routeLayer: LayerSpecification = {
   id: 'route-line',
@@ -176,6 +181,18 @@ pnpm run typecheck:prototype
 pnpm run build:prototype
 pnpm pack --dry-run
 ```
+
+Release workflow commands:
+
+```sh
+pnpm run changeset
+pnpm run release:prepare
+pnpm run release:publish
+```
+
+The `release` workflow opens Changesets version PRs on `main` and publishes
+`@proyecto-viviana/solidjs-maplibre` through npm trusted publishing after the
+version PR lands.
 
 See [docs/solid-port-plan.md](docs/solid-port-plan.md) for the porting plan,
 [docs/implementation-roadmap.md](docs/implementation-roadmap.md) for completed

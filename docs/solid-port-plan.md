@@ -111,9 +111,10 @@ marker/popup overlays, GeoJSON `Source`/`Layer` composition, controlled
 `viewState`, feature picking through `interactiveLayerIds`, globe projection,
 terrain updates through a local raster-dem source, and the full integrated
 operations flow.
-The Phase 5 release gate has passed. The package is ready for an external
-publish once the repository state is pushed and the npm publish credentials are
-available.
+The Phase 5 release gate has passed. Publishing now runs through Changesets:
+open a changeset for releasable package changes, merge the generated version
+PR, and let the release workflow publish `@proyecto-viviana/solidjs-maplibre`
+through npm trusted publishing.
 
 See [implementation-roadmap.md](implementation-roadmap.md) for the work order
 and [parity-checklist.md](parity-checklist.md) for the upstream compatibility
