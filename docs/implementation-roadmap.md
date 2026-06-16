@@ -31,12 +31,15 @@ surface expands.
 Goal: match the practical controlled/uncontrolled camera behavior users expect
 from `@vis.gl/react-maplibre`.
 
-- Audit `initialViewState`, individual camera props, and `viewState`.
-- Verify `onMoveStart`, `onMove`, `onMoveEnd`, and related zoom/rotate/pitch
+- [x] Audit `initialViewState`, individual camera props, and `viewState`.
+- [x] Verify `onMoveStart`, `onMove`, `onMoveEnd`, and related zoom/rotate/pitch
   events include `viewState`.
-- Add tests for prop-driven camera updates.
-- Add tests for internal camera updates not re-entering controlled updates.
-- Add a controlled-map example to the prototype set.
+- [x] Add tests for prop-driven camera updates.
+- [x] Add tests for internal camera updates not re-entering controlled updates.
+- [x] Add Solid component-level tests for reactive controlled `viewState`.
+- [x] Add a controlled-map example to the prototype set.
+- [x] Exercise the controlled prototype with Playwright CLI before moving to
+  Phase 3.
 
 ## Phase 3: Interactive Layer Events
 

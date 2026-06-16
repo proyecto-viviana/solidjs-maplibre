@@ -1,4 +1,4 @@
-import {createSignal, For, Show} from 'solid-js';
+import {createMemo, createSignal, For, onCleanup, onMount, Show} from 'solid-js';
 import {render} from 'solid-js/web';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import {
@@ -12,7 +12,7 @@ import {
   ScaleControl,
   Source
 } from 'solidjs-maplibre';
-import type {LayerProps, MapRef, SourceProps, StyleSpecification} from 'solidjs-maplibre';
+import type {LayerProps, MapRef, SourceProps, StyleSpecification, ViewState} from 'solidjs-maplibre';
 import './styles.css';
 
 declare global {
@@ -142,25 +142,151 @@ const routeLayer: LayerProps = {
   }
 };
 
+const cameraPresets = [
+  {
+    id: 'harbor',
+    label: 'Harbor',
+    stationId: 'customs',
+    camera: {
+      longitude: -56.185,
+      latitude: -34.924,
+      zoom: 11.9,
+      pitch: 38,
+      bearing: -24
+    }
+  },
+  {
+    id: 'gate',
+    label: 'Gate',
+    stationId: 'customs',
+    camera: {
+      longitude: -56.193,
+      latitude: -34.906,
+      zoom: 13.2,
+      pitch: 48,
+      bearing: -18
+    }
+  },
+  {
+    id: 'yard',
+    label: 'Yard',
+    stationId: 'south-yard',
+    camera: {
+      longitude: -56.159,
+      latitude: -34.936,
+      zoom: 13.1,
+      pitch: 44,
+      bearing: 12
+    }
+  }
+] as const;
+
+function findStation(id: (typeof stations)[number]['id']) {
+  return stations.find(station => station.id === id) ?? stations[0];
+}
+
+function sameCamera(a: ViewState, b: ViewState) {
+  return (
+    Math.abs(a.longitude - b.longitude) < 0.000001 &&
+    Math.abs(a.latitude - b.latitude) < 0.000001 &&
+    Math.abs(a.zoom - b.zoom) < 0.000001 &&
+    Math.abs(a.pitch - b.pitch) < 0.000001 &&
+    Math.abs(a.bearing - b.bearing) < 0.000001 &&
+    a.padding === b.padding
+  );
+}
+
 function App() {
+  let mapStageRef!: HTMLElement;
+  let pendingCamera: ViewState | undefined;
+  let cameraFrame = 0;
   const [selectedStation, setSelectedStation] = createSignal<(typeof stations)[number]>(stations[1]);
   const [showZone, setShowZone] = createSignal(true);
   const [showPopup, setShowPopup] = createSignal(true);
   const [cursor, setCursor] = createSignal('grab');
+  const [camera, setCamera] = createSignal<ViewState>(cameraPresets[0].camera);
+  const [mapSize, setMapSize] = createSignal({width: 960, height: 720});
+  const controlledViewState = createMemo(() => ({
+    ...camera(),
+    width: mapSize().width,
+    height: mapSize().height
+  }));
+
+  onMount(() => {
+    const updateSize = () => {
+      const bounds = mapStageRef.getBoundingClientRect();
+      if (bounds.width > 0 && bounds.height > 0) {
+        const width = Math.round(bounds.width);
+        const height = Math.round(bounds.height);
+        setMapSize(current => {
+          if (current.width === width && current.height === height) {
+            return current;
+          }
+          return {width, height};
+        });
+      }
+    };
+    updateSize();
+
+    const observer = new ResizeObserver(updateSize);
+    observer.observe(mapStageRef);
+    onCleanup(() => {
+      observer.disconnect();
+      if (cameraFrame) {
+        cancelAnimationFrame(cameraFrame);
+      }
+    });
+  });
+
+  const scheduleCameraSync = (nextCamera: ViewState) => {
+    pendingCamera = nextCamera;
+    if (cameraFrame) {
+      return;
+    }
+    cameraFrame = requestAnimationFrame(() => {
+      cameraFrame = 0;
+      const next = pendingCamera;
+      pendingCamera = undefined;
+      if (!next) {
+        return;
+      }
+      setCamera(current => {
+        if (sameCamera(current, next)) {
+          return current;
+        }
+        return next;
+      });
+    });
+  };
+
+  const focusStation = (station: (typeof stations)[number]) => {
+    setSelectedStation(station);
+    setShowPopup(true);
+    setCamera(current => ({
+      ...current,
+      longitude: station.longitude,
+      latitude: station.latitude,
+      zoom: Math.max(current.zoom, 13),
+      pitch: 44
+    }));
+  };
+
+  const applyCameraPreset = (preset: (typeof cameraPresets)[number]) => {
+    setSelectedStation(findStation(preset.stationId));
+    setShowPopup(true);
+    setCamera(current => ({
+      ...current,
+      ...preset.camera
+    }));
+  };
 
   return (
     <main class="workbench">
-      <section class="map-stage" aria-label="MapLibre SolidJS prototype">
+      <section ref={mapStageRef} class="map-stage" aria-label="MapLibre SolidJS prototype">
         <Map
           id="prototype-map"
           mapStyle={mapStyle}
-          initialViewState={{
-            longitude: -56.185,
-            latitude: -34.924,
-            zoom: 11.9,
-            pitch: 38,
-            bearing: -24
-          }}
+          viewState={controlledViewState()}
           minZoom={9}
           maxZoom={16}
           cursor={cursor()}
@@ -169,6 +295,19 @@ function App() {
           }}
           onMouseDown={() => setCursor('grabbing')}
           onMouseUp={() => setCursor('grab')}
+          onMove={event => {
+            if (!event.originalEvent) {
+              return;
+            }
+            scheduleCameraSync({
+              longitude: event.viewState.longitude,
+              latitude: event.viewState.latitude,
+              zoom: event.viewState.zoom,
+              pitch: event.viewState.pitch,
+              bearing: event.viewState.bearing,
+              padding: event.viewState.padding
+            });
+          }}
         >
           <NavigationControl position="top-left" />
           <FullscreenControl position="top-left" />
@@ -194,8 +333,7 @@ function App() {
                 anchor="center"
                 className={`station-marker station-marker-${station.status}`}
                 onClick={() => {
-                  setSelectedStation(station);
-                  setShowPopup(true);
+                  focusStation(station);
                 }}
               >
                 <button class="station-pin" type="button" aria-label={station.name}>
@@ -242,6 +380,37 @@ function App() {
           <small>{selectedStation().kind}</small>
         </div>
 
+        <div class="camera-board">
+          <div class="camera-metrics">
+            <span>
+              Zoom <strong>{camera().zoom.toFixed(1)}</strong>
+            </span>
+            <span>
+              Bearing <strong>{Math.round(camera().bearing)} deg</strong>
+            </span>
+            <span>
+              Pitch <strong>{Math.round(camera().pitch)} deg</strong>
+            </span>
+          </div>
+          <div class="camera-actions">
+            <For each={cameraPresets}>
+              {preset => (
+                <button
+                  type="button"
+                  classList={{
+                    active:
+                      Math.abs(camera().longitude - preset.camera.longitude) < 0.001 &&
+                      Math.abs(camera().latitude - preset.camera.latitude) < 0.001
+                  }}
+                  onClick={() => applyCameraPreset(preset)}
+                >
+                  {preset.label}
+                </button>
+              )}
+            </For>
+          </div>
+        </div>
+
         <div class="toggles">
           <label>
             <input
@@ -268,8 +437,7 @@ function App() {
                 type="button"
                 classList={{active: selectedStation().id === station.id}}
                 onClick={() => {
-                  setSelectedStation(station);
-                  setShowPopup(true);
+                  focusStation(station);
                 }}
               >
                 <span>{station.name}</span>
