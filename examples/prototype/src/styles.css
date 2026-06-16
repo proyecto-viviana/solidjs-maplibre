@@ -1,0 +1,264 @@
+:root {
+  color: #19211d;
+  background: #f4f5f0;
+  font-family: "Aptos", "Segoe UI", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.workbench {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, rgba(25, 33, 29, 0.05) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(25, 33, 29, 0.05) 1px, transparent 1px),
+    #f4f5f0;
+  background-size: 28px 28px;
+}
+
+.map-stage {
+  position: relative;
+  min-width: 0;
+  height: 100%;
+  border-right: 1px solid #1f2a24;
+}
+
+.map-stage::after {
+  content: "";
+  position: absolute;
+  inset: 18px;
+  pointer-events: none;
+  border: 1px solid rgba(31, 42, 36, 0.34);
+  box-shadow: inset 0 0 0 8px rgba(244, 245, 240, 0.16);
+}
+
+#prototype-map {
+  width: 100%;
+  height: 100%;
+}
+
+.control-panel {
+  display: grid;
+  grid-template-rows: auto auto auto 1fr;
+  gap: 18px;
+  height: 100%;
+  padding: 28px;
+  background: #fbfbf7;
+  border-left: 5px solid #d44a32;
+}
+
+.panel-head {
+  padding-bottom: 24px;
+  border-bottom: 2px solid #19211d;
+}
+
+.panel-head p,
+.popup-card p {
+  margin: 0 0 8px;
+  color: #d44a32;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.panel-head h1 {
+  margin: 0;
+  max-width: 8ch;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 44px;
+  line-height: 0.96;
+  font-weight: 700;
+}
+
+.readout {
+  display: grid;
+  gap: 4px;
+  padding: 18px;
+  border: 1px solid #19211d;
+  background: #e8ece7;
+}
+
+.readout span,
+.readout small,
+.station-list small {
+  color: #556157;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.readout strong {
+  font-size: 24px;
+}
+
+.toggles {
+  display: grid;
+  gap: 10px;
+}
+
+.toggles label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid rgba(25, 33, 29, 0.28);
+  cursor: pointer;
+}
+
+.toggles input {
+  width: 18px;
+  height: 18px;
+  accent-color: #d44a32;
+}
+
+.station-list {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+}
+
+.station-list button {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 54px;
+  padding: 12px 14px;
+  color: #19211d;
+  background: transparent;
+  border: 1px solid rgba(25, 33, 29, 0.26);
+  cursor: pointer;
+  text-align: left;
+}
+
+.station-list button:hover,
+.station-list button.active {
+  color: #fbfbf7;
+  background: #19211d;
+  border-color: #19211d;
+}
+
+.station-list button.active small,
+.station-list button:hover small {
+  color: #b9c3bb;
+}
+
+.station-pin {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  color: #fbfbf7;
+  background: #19211d;
+  border: 3px solid #fbfbf7;
+  border-radius: 50%;
+  box-shadow: 0 5px 0 rgba(25, 33, 29, 0.28);
+  cursor: pointer;
+}
+
+.station-pin span {
+  transform: translateY(-1px);
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.station-marker-watch .station-pin {
+  background: #d44a32;
+}
+
+.station-marker-clear .station-pin {
+  background: #4d8060;
+}
+
+.station-popup .maplibregl-popup-content {
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.popup-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 220px;
+  padding: 14px;
+  color: #19211d;
+  background: #fbfbf7;
+  border: 2px solid #19211d;
+  box-shadow: 8px 8px 0 rgba(25, 33, 29, 0.26);
+}
+
+.popup-card h2 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.popup-card button {
+  min-height: 34px;
+  padding: 0 12px;
+  color: #fbfbf7;
+  background: #d44a32;
+  border: 0;
+  cursor: pointer;
+}
+
+.maplibregl-ctrl-group {
+  border-radius: 0;
+  box-shadow: 5px 5px 0 rgba(25, 33, 29, 0.18);
+}
+
+.maplibregl-ctrl button {
+  border-radius: 0;
+}
+
+@media (max-width: 880px) {
+  .workbench {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+
+  .map-stage {
+    min-height: 62vh;
+    border-right: 0;
+    border-bottom: 1px solid #1f2a24;
+  }
+
+  .control-panel {
+    grid-template-columns: 1fr;
+    max-height: 38vh;
+    overflow: auto;
+    border-left: 0;
+    border-top: 5px solid #d44a32;
+    padding: 18px;
+  }
+
+  .panel-head h1 {
+    max-width: none;
+    font-size: 32px;
+  }
+}

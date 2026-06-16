@@ -1,0 +1,48 @@
+{
+  "name": "solidjs-maplibre",
+  "version": "0.0.0",
+  "description": "SolidJS components for MapLibre GL JS",
+  "type": "module",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsdown",
+    "dev:prototype": "vite --config examples/prototype/vite.config.ts --host 127.0.0.1",
+    "build:prototype": "vite build --config examples/prototype/vite.config.ts",
+    "typecheck:prototype": "tsc --noEmit -p examples/prototype/tsconfig.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "peerDependencies": {
+    "maplibre-gl": ">=4.0.0",
+    "solid-js": ">=1.8.0"
+  },
+  "devDependencies": {
+    "@solidjs/testing-library": "^0.8.10",
+    "jsdom": "^24.1.3",
+    "maplibre-gl": "^5.0.0",
+    "solid-js": "^1.8.0",
+    "tsdown": "^0.22.2",
+    "typescript": "^5.6.3",
+    "unplugin-solid": "^1.0.0",
+    "vite": "^5.4.11",
+    "vite-plugin-solid": "^2.10.2",
+    "vitest": "^2.1.5"
+  }
+}
