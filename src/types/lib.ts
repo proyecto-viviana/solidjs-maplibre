@@ -37,7 +37,8 @@ export type {
   MarkerOptions,
   NavigationControlOptions,
   PopupOptions,
-  ScaleControlOptions
+  ScaleControlOptions,
+  TerrainSpecification
 };
 
 export type MapInstance = MapLibreMap & Record<string, any>;

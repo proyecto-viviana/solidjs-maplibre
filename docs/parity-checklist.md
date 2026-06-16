@@ -4,7 +4,10 @@ Reference upstream surface: `visgl/react-map-gl` `modules/react-maplibre`.
 
 ## Export Surface
 
-Status: implemented at the top level.
+Status: implemented at the top level. A compile-only public type export test
+covers the upstream-compatible common, event, library, and style-spec aliases.
+`ViewState.padding` remains optional because this Solid port can emit camera
+state before padding is configured.
 
 - `Map`
 - default `Map`

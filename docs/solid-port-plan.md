@@ -111,8 +111,8 @@ marker/popup overlays, GeoJSON `Source`/`Layer` composition, controlled
 `viewState`, feature picking through `interactiveLayerIds`, globe projection,
 terrain updates through a local raster-dem source, and the full integrated
 operations flow.
-The remaining porting work is release polish: type parity, publish dry-run
-checks, and release-focused documentation.
+The remaining porting work is release polish: publish dry-run checks and
+release-focused documentation.
 
 See [implementation-roadmap.md](implementation-roadmap.md) for the work order
 and [parity-checklist.md](parity-checklist.md) for the upstream compatibility

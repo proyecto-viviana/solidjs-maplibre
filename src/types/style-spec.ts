@@ -1,9 +1,25 @@
 export type {
+  BackgroundLayerSpecification,
+  CanvasSourceSpecification,
+  CircleLayerSpecification,
+  FillExtrusionLayerSpecification,
+  FillLayerSpecification,
+  GeoJSONSourceSpecification,
+  HeatmapLayerSpecification,
+  HillshadeLayerSpecification,
+  ImageSourceSpecification,
   LayerSpecification,
   LightSpecification,
+  LineLayerSpecification,
   ProjectionSpecification,
+  RasterDEMSourceSpecification,
+  RasterLayerSpecification,
+  RasterSourceSpecification,
   SkySpecification,
   SourceSpecification,
   StyleSpecification,
-  TerrainSpecification
+  SymbolLayerSpecification,
+  TerrainSpecification,
+  VectorSourceSpecification,
+  VideoSourceSpecification
 } from 'maplibre-gl';
