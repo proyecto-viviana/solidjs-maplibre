@@ -107,9 +107,10 @@ foundation plus the first style/rendering components:
 - Prototype example app under `examples/prototype`
 
 The current prototype exercises controlled `viewState`, nested `Source`/`Layer`
-composition, controls, markers, popups, style updates, and map instance refs.
-The remaining porting work is compatibility depth: map reuse, interactive layer
-events, broader style reload coverage, and a focused test suite.
+composition, controls, markers, popups, style updates, map instance refs, and
+interactive feature picking through `interactiveLayerIds`.
+The remaining porting work is compatibility depth: map reuse, broader style
+reload coverage, terrain/globe-style components, and release-focused examples.
 
 See [implementation-roadmap.md](implementation-roadmap.md) for the work order
 and [parity-checklist.md](parity-checklist.md) for the upstream compatibility

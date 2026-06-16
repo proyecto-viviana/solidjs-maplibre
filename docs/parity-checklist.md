@@ -38,7 +38,7 @@ Status: implemented at the top level.
 | `Source` | Implemented, needs tests | GeoJSON/image/vector update paths, cleanup, style reload recreation. |
 | `Layer` | Implemented, needs tests | Source inheritance, paint/layout/filter updates, ordering, cleanup. |
 | Controlled camera | Wrapper and Solid component behavior covered | Keep Playwright prototype smoke checks in the release gate. |
-| Interactive events | Partial | `interactiveLayerIds`, queried features, hover enter/leave transitions. |
+| Interactive events | Wrapper behavior covered | Keep Playwright picking smoke checks in the release gate. |
 | Style components | Partial | `light`, `terrain`, `projection`, `sky`, and style reload behavior. |
 | Map reuse | Pending | `reuseMaps`, recycled container children, restored props and initial camera. |
 | Examples | Prototype only | Split into focused examples before release. |
@@ -53,6 +53,8 @@ Status: implemented at the top level.
   `viewState`.
 - Solid component tests for reactive controlled `viewState` updates and
   `onMove` feedback loops.
+- Direct wrapper tests for `interactiveLayerIds` filtering, feature-enriched
+  pointer events, and hover enter/leave transitions.
 - Browser smoke checks with Playwright CLI for the controlled prototype app.
-- Future browser tests for feature picking once interactive layer surfaces are
-  complete.
+- Browser smoke checks with Playwright CLI for feature picking in the prototype
+  app.

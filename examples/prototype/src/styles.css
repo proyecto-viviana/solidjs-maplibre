@@ -60,7 +60,7 @@ input {
 
 .control-panel {
   display: grid;
-  grid-template-rows: auto auto auto auto minmax(0, 1fr);
+  grid-template-rows: auto auto auto auto auto minmax(0, 1fr);
   gap: 18px;
   height: 100%;
   padding: 28px;
@@ -111,6 +111,60 @@ input {
 
 .readout strong {
   font-size: 24px;
+}
+
+.feature-board {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  border: 1px solid #19211d;
+  background: #fbfbf7;
+}
+
+.feature-pick,
+.feature-signal {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 14px;
+}
+
+.feature-pick {
+  background: #19211d;
+  color: #fbfbf7;
+}
+
+.feature-signal {
+  border-left: 1px solid #19211d;
+}
+
+.feature-signal.live {
+  background: #e8ece7;
+}
+
+.feature-board span,
+.feature-board small {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.feature-board span {
+  color: #d44a32;
+  font-weight: 800;
+}
+
+.feature-pick small {
+  color: #c6d2c9;
+}
+
+.feature-signal small {
+  color: #556157;
+}
+
+.feature-board strong {
+  overflow-wrap: anywhere;
+  font-size: 18px;
+  line-height: 1.05;
 }
 
 .camera-board {
@@ -320,5 +374,14 @@ input {
 
   .camera-metrics {
     grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .feature-board {
+    grid-template-columns: 1fr;
+  }
+
+  .feature-signal {
+    border-left: 0;
+    border-top: 1px solid #19211d;
   }
 }

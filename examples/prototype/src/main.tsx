@@ -12,7 +12,14 @@ import {
   ScaleControl,
   Source
 } from 'solidjs-maplibre';
-import type {LayerProps, MapRef, SourceProps, StyleSpecification, ViewState} from 'solidjs-maplibre';
+import type {
+  LayerProps,
+  MapGeoJSONFeature,
+  MapRef,
+  SourceProps,
+  StyleSpecification,
+  ViewState
+} from 'solidjs-maplibre';
 import './styles.css';
 
 declare global {
@@ -43,7 +50,12 @@ const routeData: GeoJsonSourceData = {
   features: [
     {
       type: 'Feature',
-      properties: {name: 'Port loop'},
+      properties: {
+        name: 'Port loop',
+        kind: 'Route',
+        status: 'Live',
+        detail: '6 checkpoints'
+      },
       geometry: {
         type: 'LineString',
         coordinates: [
@@ -64,7 +76,12 @@ const zoneData: GeoJsonSourceData = {
   features: [
     {
       type: 'Feature',
-      properties: {name: 'Inspection grid'},
+      properties: {
+        name: 'Inspection grid',
+        kind: 'Zone',
+        status: 'Active',
+        detail: '5 control edges'
+      },
       geometry: {
         type: 'Polygon',
         coordinates: [
@@ -181,8 +198,26 @@ const cameraPresets = [
   }
 ] as const;
 
+type FeaturePick = {
+  layerId: string;
+  name: string;
+  kind: string;
+  status: string;
+  detail: string;
+};
+
 function findStation(id: (typeof stations)[number]['id']) {
   return stations.find(station => station.id === id) ?? stations[0];
+}
+
+function pickFeature(feature: MapGeoJSONFeature): FeaturePick {
+  return {
+    layerId: feature.layer.id,
+    name: String(feature.properties?.name ?? feature.layer.id),
+    kind: String(feature.properties?.kind ?? 'Feature'),
+    status: String(feature.properties?.status ?? 'Observed'),
+    detail: String(feature.properties?.detail ?? feature.layer.id)
+  };
 }
 
 function sameCamera(a: ViewState, b: ViewState) {
@@ -204,6 +239,13 @@ function App() {
   const [showZone, setShowZone] = createSignal(true);
   const [showPopup, setShowPopup] = createSignal(true);
   const [cursor, setCursor] = createSignal('grab');
+  const [hoveredFeature, setHoveredFeature] = createSignal<FeaturePick>();
+  const [pickedFeature, setPickedFeature] = createSignal<FeaturePick>(
+    pickFeature({
+      layer: {id: 'route-line'},
+      properties: routeData.features[0].properties
+    } as MapGeoJSONFeature)
+  );
   const [camera, setCamera] = createSignal<ViewState>(cameraPresets[0].camera);
   const [mapSize, setMapSize] = createSignal({width: 960, height: 720});
   const controlledViewState = createMemo(() => ({
@@ -211,6 +253,9 @@ function App() {
     width: mapSize().width,
     height: mapSize().height
   }));
+  const interactiveLayerIds = createMemo(() =>
+    showZone() ? ['route-line', 'inspection-zone'] : ['route-line']
+  );
 
   onMount(() => {
     const updateSize = () => {
@@ -289,12 +334,32 @@ function App() {
           viewState={controlledViewState()}
           minZoom={9}
           maxZoom={16}
+          interactiveLayerIds={interactiveLayerIds()}
           cursor={cursor()}
           ref={map => {
             window.prototypeMap = map;
           }}
           onMouseDown={() => setCursor('grabbing')}
-          onMouseUp={() => setCursor('grab')}
+          onMouseUp={() => setCursor(hoveredFeature() ? 'pointer' : 'grab')}
+          onMouseMove={event => {
+            const feature = event.features?.[0];
+            setHoveredFeature(feature ? pickFeature(feature) : undefined);
+            if (cursor() !== 'grabbing') {
+              setCursor(feature ? 'pointer' : 'grab');
+            }
+          }}
+          onMouseLeave={() => {
+            setHoveredFeature(undefined);
+            if (cursor() !== 'grabbing') {
+              setCursor('grab');
+            }
+          }}
+          onClick={event => {
+            const feature = event.features?.[0];
+            if (feature) {
+              setPickedFeature(pickFeature(feature));
+            }
+          }}
           onMove={event => {
             if (!event.originalEvent) {
               return;
@@ -378,6 +443,19 @@ function App() {
           <span>Active station</span>
           <strong>{selectedStation().name}</strong>
           <small>{selectedStation().kind}</small>
+        </div>
+
+        <div class="feature-board">
+          <div class="feature-pick">
+            <span>{pickedFeature().kind}</span>
+            <strong>{pickedFeature().name}</strong>
+            <small>{pickedFeature().detail}</small>
+          </div>
+          <div class="feature-signal" classList={{live: Boolean(hoveredFeature())}}>
+            <span>Hover</span>
+            <strong>{hoveredFeature()?.name ?? 'Clear'}</strong>
+            <small>{hoveredFeature()?.status ?? pickedFeature().layerId}</small>
+          </div>
         </div>
 
         <div class="camera-board">

@@ -45,10 +45,12 @@ from `@vis.gl/react-maplibre`.
 
 Goal: support feature-enriched pointer events for data-driven applications.
 
-- Verify `interactiveLayerIds` filtering.
-- Test `features` on click, move, enter, and leave.
-- Verify hover state transitions when moving into and out of queried features.
-- Add a picking example that displays selected feature attributes.
+- [x] Verify `interactiveLayerIds` filtering.
+- [x] Test `features` on click, move, enter, and leave.
+- [x] Verify hover state transitions when moving into and out of queried features.
+- [x] Add a picking example that displays selected feature attributes.
+- [x] Exercise the picking prototype with Playwright CLI before moving to
+  Phase 4.
 
 ## Phase 4: Style Reload Resilience
 
