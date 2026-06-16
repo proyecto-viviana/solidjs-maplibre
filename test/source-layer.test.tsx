@@ -42,6 +42,11 @@ describe('Source and Layer', () => {
 
     expect(map.getLayer('zone-fill')).toBeUndefined();
     expect(map.getSource('zone')).toBeUndefined();
+    expect(map.removeLayer).toHaveBeenCalledWith('zone-fill');
+    expect(map.removeSource).toHaveBeenCalledWith('zone');
+    expect(map.removeLayer.mock.invocationCallOrder[0]).toBeLessThan(
+      map.removeSource.mock.invocationCallOrder[0]
+    );
   });
 
   it('updates GeoJSON source data and layer paint properties', async () => {
@@ -87,5 +92,29 @@ describe('Source and Layer', () => {
       expect(map.getSource('zone')?.setData).toHaveBeenCalledWith(nextFeatureCollection);
       expect(map.setPaintProperty).toHaveBeenCalledWith('zone-fill', 'fill-color', '#11261f');
     });
+  });
+
+  it('recreates nested sources and layers after a style reload', async () => {
+    const {map, context} = createFakeMapContext();
+    render(() => (
+      <MapContext.Provider value={context}>
+        <Source id="zone" type="geojson" data={emptyFeatureCollection}>
+          <Layer id="zone-fill" type="fill" paint={{'fill-color': '#d94b37'}} />
+        </Source>
+      </MapContext.Provider>
+    ));
+
+    await waitFor(() => expect(map.getLayer('zone-fill')).toBeTruthy());
+
+    map.sources.clear();
+    map.layers = [];
+    map.fire('styledata');
+
+    await waitFor(() => {
+      expect(map.getSource('zone')).toBeTruthy();
+      expect(map.getLayer('zone-fill')).toMatchObject({source: 'zone'});
+    });
+    expect(map.addSource).toHaveBeenCalledTimes(2);
+    expect(map.addLayer).toHaveBeenCalledTimes(2);
   });
 });

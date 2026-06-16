@@ -125,11 +125,16 @@ export function Source(props: SourceProps) {
     setSourceReady(Boolean(source));
   });
 
-  const forceUpdate = () => setTimeout(() => setStyleLoadedVersion(version => version + 1), 0);
+  let styleReloadTimer: ReturnType<typeof setTimeout> | undefined;
+  const forceUpdate = () => {
+    clearTimeout(styleReloadTimer);
+    styleReloadTimer = setTimeout(() => setStyleLoadedVersion(version => version + 1), 0);
+  };
   map.on('styledata', forceUpdate);
   forceUpdate();
 
   onCleanup(() => {
+    clearTimeout(styleReloadTimer);
     map.off('styledata', forceUpdate);
     if (map.style && map.style._loaded && map.getSource(id)) {
       const allLayers = map.getStyle()?.layers;

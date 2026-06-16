@@ -57,10 +57,10 @@ Goal: support feature-enriched pointer events for data-driven applications.
 Goal: keep declarative sources, layers, and style components stable across
 MapLibre style changes.
 
-- Test `Source` and `Layer` recreation after `styledata`.
-- Verify cleanup order when nested layers and sources unmount.
-- Test `light`, `terrain`, `projection`, `sky`, and `mapStyle` updates.
-- Add terrain/globe examples.
+- [x] Test `Source` and `Layer` recreation after `styledata`.
+- [x] Verify cleanup order when nested layers and sources unmount.
+- [ ] Test `light`, `terrain`, `projection`, `sky`, and `mapStyle` updates.
+- [ ] Add terrain/globe examples.
 
 ## Phase 5: Map Reuse And Release Polish
 

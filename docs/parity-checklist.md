@@ -35,8 +35,8 @@ Status: implemented at the top level.
 | Standard controls | Implemented, needs tests | Control add/remove and option updates. |
 | `Marker` | Implemented, needs tests | Portal children, DOM style/class updates, popup attachment, drag/click events. |
 | `Popup` | Implemented, needs tests | Portal children, open/close events, style/class updates, position updates. |
-| `Source` | Implemented, needs tests | GeoJSON/image/vector update paths, cleanup, style reload recreation. |
-| `Layer` | Implemented, needs tests | Source inheritance, paint/layout/filter updates, ordering, cleanup. |
+| `Source` | GeoJSON update, cleanup order, and style reload recreation covered | Add image/vector update coverage. |
+| `Layer` | Source inheritance, paint updates, cleanup order, and style reload recreation covered | Add layout/filter/ordering coverage. |
 | Controlled camera | Wrapper and Solid component behavior covered | Keep Playwright prototype smoke checks in the release gate. |
 | Interactive events | Wrapper behavior covered | Keep Playwright picking smoke checks in the release gate. |
 | Style components | Partial | `light`, `terrain`, `projection`, `sky`, and style reload behavior. |
@@ -55,6 +55,8 @@ Status: implemented at the top level.
   `onMove` feedback loops.
 - Direct wrapper tests for `interactiveLayerIds` filtering, feature-enriched
   pointer events, and hover enter/leave transitions.
+- Component tests for `Source`/`Layer` cleanup order and style reload
+  recreation.
 - Browser smoke checks with Playwright CLI for the controlled prototype app.
 - Browser smoke checks with Playwright CLI for feature picking in the prototype
   app.

@@ -130,11 +130,16 @@ export function Layer(props: LayerProps) {
     previousProps = nextProps;
   });
 
-  const forceUpdate = () => setStyleLoadedVersion(version => version + 1);
+  let styleReloadTimer: ReturnType<typeof setTimeout> | undefined;
+  const forceUpdate = () => {
+    clearTimeout(styleReloadTimer);
+    styleReloadTimer = setTimeout(() => setStyleLoadedVersion(version => version + 1), 0);
+  };
   map.on('styledata', forceUpdate);
   forceUpdate();
 
   onCleanup(() => {
+    clearTimeout(styleReloadTimer);
     map.off('styledata', forceUpdate);
     if (map.style && map.style._loaded && map.getLayer(id)) {
       map.removeLayer(id);
