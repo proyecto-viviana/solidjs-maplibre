@@ -39,7 +39,7 @@ Status: implemented at the top level.
 | `Layer` | Source inheritance, paint updates, cleanup order, and style reload recreation covered | Add layout/filter/ordering coverage. |
 | Controlled camera | Wrapper and Solid component behavior covered | Keep Playwright prototype smoke checks in the release gate. |
 | Interactive events | Wrapper behavior covered | Keep Playwright picking smoke checks in the release gate. |
-| Style components | Partial | `light`, `terrain`, `projection`, `sky`, and style reload behavior. |
+| Style components | Map style, light, terrain, projection, and sky updates covered | Add terrain/globe prototype coverage. |
 | Map reuse | Pending | `reuseMaps`, recycled container children, restored props and initial camera. |
 | Examples | Prototype only | Split into focused examples before release. |
 
@@ -57,6 +57,8 @@ Status: implemented at the top level.
   pointer events, and hover enter/leave transitions.
 - Component tests for `Source`/`Layer` cleanup order and style reload
   recreation.
+- Direct wrapper tests for `mapStyle`, `light`, `terrain`, `projection`, and
+  `sky` updates.
 - Browser smoke checks with Playwright CLI for the controlled prototype app.
 - Browser smoke checks with Playwright CLI for feature picking in the prototype
   app.

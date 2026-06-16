@@ -59,7 +59,7 @@ MapLibre style changes.
 
 - [x] Test `Source` and `Layer` recreation after `styledata`.
 - [x] Verify cleanup order when nested layers and sources unmount.
-- [ ] Test `light`, `terrain`, `projection`, `sky`, and `mapStyle` updates.
+- [x] Test `light`, `terrain`, `projection`, `sky`, and `mapStyle` updates.
 - [ ] Add terrain/globe examples.
 
 ## Phase 5: Map Reuse And Release Polish

@@ -45,9 +45,10 @@ export type MaplibreProps = Partial<ViewState> &
     };
     mapStyle?: string | StyleSpecification | ImmutableLike<StyleSpecification>;
     styleDiffing?: boolean;
+    localIdeographFontFamily?: string;
     projection?: ProjectionSpecification | 'mercator' | 'globe';
     light?: LightSpecification;
-    terrain?: TerrainSpecification;
+    terrain?: TerrainSpecification | null;
     sky?: SkySpecification;
     interactiveLayerIds?: string[];
     cursor?: string;
@@ -61,7 +62,6 @@ const DEFAULT_SETTINGS: Record<string, unknown> = {
   minPitch: 0,
   maxPitch: 85,
   maxBounds: [-180, -85.051129, 180, 85.051129],
-  projection: 'mercator',
   renderWorldCopies: true
 };
 
@@ -122,7 +122,6 @@ const settingNames = [
   'minPitch',
   'maxPitch',
   'maxBounds',
-  'projection',
   'renderWorldCopies'
 ];
 

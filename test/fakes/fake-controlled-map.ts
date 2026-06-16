@@ -42,6 +42,7 @@ export class FakeControlledMap {
   moving = false;
   canvas = {style: {cursor: ''}};
   listeners = new Map<string, Set<Listener>>();
+  sources = new Map<string, Record<string, unknown>>();
   layers = new Map<string, Record<string, unknown>>();
   queryResult: Record<string, unknown>[] = [];
   _frame: {cancel: ReturnType<typeof vi.fn>} | null = null;
@@ -64,7 +65,7 @@ export class FakeControlledMap {
   getSky = vi.fn(() => undefined);
   getProjection = vi.fn(() => ({type: 'mercator'}));
   getTerrain = vi.fn(() => null);
-  getSource = vi.fn(() => undefined);
+  getSource = vi.fn((id: string) => this.sources.get(id));
   getLayer = vi.fn((id: string) => this.layers.get(id));
   queryRenderedFeatures = vi.fn(() => this.queryResult);
   setLight = vi.fn();
