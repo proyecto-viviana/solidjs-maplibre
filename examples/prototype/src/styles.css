@@ -60,7 +60,7 @@ input {
 
 .control-panel {
   display: grid;
-  grid-template-rows: auto auto auto auto auto minmax(0, 1fr);
+  grid-template-rows: auto auto auto auto auto auto minmax(0, 1fr);
   gap: 18px;
   height: 100%;
   padding: 28px;
@@ -223,6 +223,38 @@ input {
   border-color: #d44a32;
 }
 
+.surface-board {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border: 1px solid #19211d;
+}
+
+.surface-board div {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  padding: 13px 14px;
+  background: #e8ece7;
+}
+
+.surface-board div + div {
+  border-left: 1px solid #19211d;
+  background: #eef4f5;
+}
+
+.surface-board span {
+  color: #556157;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.surface-board strong {
+  overflow-wrap: anywhere;
+  color: #19211d;
+  font-size: 18px;
+}
+
 .toggles {
   display: grid;
   gap: 10px;
@@ -383,5 +415,14 @@ input {
   .feature-signal {
     border-left: 0;
     border-top: 1px solid #19211d;
+  }
+
+  .surface-board {
+    grid-template-columns: 1fr;
+  }
+
+  .surface-board div + div {
+    border-top: 1px solid #19211d;
+    border-left: 0;
   }
 }

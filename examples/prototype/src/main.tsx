@@ -159,6 +159,32 @@ const routeLayer: LayerProps = {
   }
 };
 
+const terrainSource: SourceProps = {
+  id: 'terrain-dem',
+  type: 'raster-dem',
+  tiles: ['/terrain-dem.png'],
+  tileSize: 256,
+  maxzoom: 5,
+  encoding: 'mapbox'
+};
+
+const terrainSpec = {
+  source: 'terrain-dem',
+  exaggeration: 1.18
+};
+
+const lightSpec = {
+  anchor: 'viewport',
+  color: '#fff8e8',
+  intensity: 0.42
+} as const;
+
+const skySpec = {
+  'sky-color': '#b9d8e5',
+  'sky-horizon-blend': 0.22,
+  'horizon-color': '#f1c986'
+};
+
 const cameraPresets = [
   {
     id: 'harbor',
@@ -238,6 +264,8 @@ function App() {
   const [selectedStation, setSelectedStation] = createSignal<(typeof stations)[number]>(stations[1]);
   const [showZone, setShowZone] = createSignal(true);
   const [showPopup, setShowPopup] = createSignal(true);
+  const [globeProjection, setGlobeProjection] = createSignal(true);
+  const [terrainEnabled, setTerrainEnabled] = createSignal(false);
   const [cursor, setCursor] = createSignal('grab');
   const [hoveredFeature, setHoveredFeature] = createSignal<FeaturePick>();
   const [pickedFeature, setPickedFeature] = createSignal<FeaturePick>(
@@ -334,6 +362,11 @@ function App() {
           viewState={controlledViewState()}
           minZoom={9}
           maxZoom={16}
+          maxPitch={72}
+          projection={globeProjection() ? 'globe' : 'mercator'}
+          light={lightSpec}
+          sky={skySpec}
+          terrain={terrainEnabled() ? terrainSpec : null}
           interactiveLayerIds={interactiveLayerIds()}
           cursor={cursor()}
           ref={map => {
@@ -378,6 +411,8 @@ function App() {
           <FullscreenControl position="top-left" />
           <ScaleControl position="bottom-left" unit="metric" />
           <AttributionControl position="bottom-right" compact />
+
+          <Source {...terrainSource} />
 
           <Show when={showZone()}>
             <Source id="zone" type="geojson" data={zoneData}>
@@ -489,7 +524,34 @@ function App() {
           </div>
         </div>
 
+        <div class="surface-board">
+          <div>
+            <span>Projection</span>
+            <strong>{globeProjection() ? 'Globe' : 'Mercator'}</strong>
+          </div>
+          <div>
+            <span>Terrain</span>
+            <strong>{terrainEnabled() ? 'DEM on' : 'Flat'}</strong>
+          </div>
+        </div>
+
         <div class="toggles">
+          <label>
+            <input
+              type="checkbox"
+              checked={globeProjection()}
+              onInput={event => setGlobeProjection(event.currentTarget.checked)}
+            />
+            <span>Globe projection</span>
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              checked={terrainEnabled()}
+              onInput={event => setTerrainEnabled(event.currentTarget.checked)}
+            />
+            <span>Terrain DEM</span>
+          </label>
           <label>
             <input
               type="checkbox"
