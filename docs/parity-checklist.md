@@ -40,7 +40,7 @@ Status: implemented at the top level.
 | Controlled camera | Wrapper and Solid component behavior covered | Keep Playwright prototype smoke checks in the release gate. |
 | Interactive events | Wrapper behavior covered | Keep Playwright picking smoke checks in the release gate. |
 | Style components | Map style, light, terrain, projection, sky, and terrain/globe prototype covered | Split terrain into a focused release example. |
-| Map reuse | Pending | `reuseMaps`, recycled container children, restored props and initial camera. |
+| Map reuse | Wrapper and Solid `reuseMaps` behavior covered | Add release example coverage if reuse remains public in examples. |
 | Examples | Prototype only | Split into focused examples before release. |
 
 ## Test Targets
@@ -59,6 +59,9 @@ Status: implemented at the top level.
   recreation.
 - Direct wrapper tests for `mapStyle`, `light`, `terrain`, `projection`, and
   `sky` updates.
+- Direct wrapper tests for `reuseMaps`, recycled container children, restored
+  props, restored initial camera, and initial bounds.
+- Solid component tests for remounting with `reuseMaps`.
 - Browser smoke checks with Playwright CLI for the controlled prototype app.
 - Browser smoke checks with Playwright CLI for feature picking in the prototype
   app.

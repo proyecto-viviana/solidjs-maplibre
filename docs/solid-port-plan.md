@@ -110,8 +110,8 @@ The current prototype exercises controlled `viewState`, nested `Source`/`Layer`
 composition, controls, markers, popups, style updates, map instance refs,
 interactive feature picking through `interactiveLayerIds`, globe projection, and
 terrain updates through a local raster-dem source.
-The remaining porting work is compatibility depth: map reuse, broader example
-coverage, and release-focused documentation.
+The remaining porting work is release polish: broader example coverage, type
+parity, and release-focused documentation.
 
 See [implementation-roadmap.md](implementation-roadmap.md) for the work order
 and [parity-checklist.md](parity-checklist.md) for the upstream compatibility

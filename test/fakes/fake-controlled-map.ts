@@ -39,12 +39,18 @@ export class FakeControlledMap {
   transform: FakeTransform;
   transformCameraUpdate?: (transform: FakeTransform) => Partial<FakeTransform> | FakeTransform;
   style = {_loaded: true};
+  styleLoaded = true;
   moving = false;
   canvas = {style: {cursor: ''}};
   listeners = new Map<string, Set<Listener>>();
   sources = new Map<string, Record<string, unknown>>();
   layers = new Map<string, Record<string, unknown>>();
   queryResult: Record<string, unknown>[] = [];
+  _container: HTMLDivElement;
+  _resizeObserver = {
+    disconnect: vi.fn(),
+    observe: vi.fn()
+  };
   _frame: {cancel: ReturnType<typeof vi.fn>} | null = null;
 
   scrollZoom = createHandler();
@@ -73,6 +79,7 @@ export class FakeControlledMap {
   setProjection = vi.fn();
   setTerrain = vi.fn();
   setStyle = vi.fn();
+  fitBounds = vi.fn();
   setMinZoom = vi.fn();
   setMaxZoom = vi.fn();
   setMinPitch = vi.fn();
@@ -84,10 +91,16 @@ export class FakeControlledMap {
     this.transform.height = this.options.viewState?.height ?? this.transform.height;
   });
   _render = vi.fn();
+  _update = vi.fn();
   remove = vi.fn();
 
   constructor(options: Record<string, any>) {
     this.options = options;
+    this._container = options.container;
+    this._container.className = [this._container.className, 'maplibregl-map'].filter(Boolean).join(' ');
+    const mapCanvas = document.createElement('div');
+    mapCanvas.setAttribute('data-fake-maplibre-canvas', '');
+    this._container.appendChild(mapCanvas);
     this.transform = createFakeTransform({
       longitude: options.center?.[0],
       latitude: options.center?.[1],
@@ -100,6 +113,8 @@ export class FakeControlledMap {
   }
 
   isMoving = vi.fn(() => this.moving);
+  isStyleLoaded = vi.fn(() => this.styleLoaded);
+  getContainer = vi.fn(() => this._container);
 
   jumpTo = vi.fn((changes: Partial<FakeTransform>) => {
     Object.assign(this.transform, changes);
