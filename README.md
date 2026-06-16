@@ -194,6 +194,26 @@ The `release` workflow opens Changesets version PRs on `main` and publishes
 `@proyecto-viviana/solidjs-maplibre` through npm trusted publishing after the
 version PR lands.
 
+Configure npm trusted publishing from the npm package settings:
+
+- Publisher: GitHub Actions
+- Organization or user: `proyecto-viviana`
+- Repository: `solidjs-maplibre`
+- Workflow filename: `release.yml`
+- Environment name: leave blank unless `.github/workflows/release.yml` adds one
+- Allowed actions: `npm publish`
+
+The release workflow already grants `id-token: write`, upgrades npm for trusted
+publishing, and runs the publish job on a GitHub-hosted runner. No `NPM_TOKEN`
+secret is needed for trusted publishing. For the first package bootstrap, publish
+`@proyecto-viviana/solidjs-maplibre` as public with npm org permissions, or use
+npm's new-package trusted publisher flow if it is available to the org:
+
+```sh
+pnpm run ci:release-readiness
+npm publish --access public
+```
+
 See [docs/solid-port-plan.md](docs/solid-port-plan.md) for the porting plan,
 [docs/implementation-roadmap.md](docs/implementation-roadmap.md) for completed
 milestones, and [docs/parity-checklist.md](docs/parity-checklist.md) for the
