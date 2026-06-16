@@ -110,3 +110,7 @@ The current prototype exercises nested `Source`/`Layer` composition, controls,
 markers, popups, style updates, and map instance refs. The remaining porting
 work is compatibility depth: controlled view state, map reuse, interactive
 layer events, broader style reload coverage, and a focused test suite.
+
+See [implementation-roadmap.md](implementation-roadmap.md) for the work order
+and [parity-checklist.md](parity-checklist.md) for the upstream compatibility
+audit.

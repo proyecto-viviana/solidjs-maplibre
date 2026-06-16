@@ -6,8 +6,10 @@ This project is a Solid-native port of the `@vis.gl/react-maplibre` API. The
 imperative MapLibre behavior is kept close to upstream while the component layer
 uses Solid lifecycle, context, and JSX semantics.
 
-See [docs/solid-port-plan.md](docs/solid-port-plan.md) for the porting plan and
-current implementation milestones.
+See [docs/solid-port-plan.md](docs/solid-port-plan.md) for the porting plan,
+[docs/implementation-roadmap.md](docs/implementation-roadmap.md) for the next
+work phases, and [docs/parity-checklist.md](docs/parity-checklist.md) for the
+upstream parity checklist.
 
 ## Current Status
 

@@ -26,6 +26,7 @@
     "dev:prototype": "vite --config examples/prototype/vite.config.ts --host 127.0.0.1",
     "build:prototype": "vite build --config examples/prototype/vite.config.ts",
     "typecheck:prototype": "tsc --noEmit -p examples/prototype/tsconfig.json",
+    "typecheck:test": "tsc --noEmit -p tsconfig.test.json",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
