@@ -69,6 +69,6 @@ Goal: finish the compatibility edges before publishing.
 - [x] Verify `reuseMaps` behavior and cleanup.
 - [x] Add upstream event aliases and `GeolocateControl` event props.
 - [ ] Expand remaining type parity against upstream.
-- Add examples for basic map, controls, marker/popup, GeoJSON, controlled map,
-  picking, and terrain.
-- Run package checks, prototype checks, and publish dry-run checks.
+- [x] Add focused prototype examples for basic map, controls, marker/popup,
+  GeoJSON, controlled map, picking, and terrain.
+- [ ] Run package checks, prototype checks, and publish dry-run checks.

@@ -1,4 +1,4 @@
-import {createMemo, createSignal, For, onCleanup, onMount, Show} from 'solid-js';
+import {batch, createMemo, createSignal, For, onCleanup, onMount, Show} from 'solid-js';
 import {render} from 'solid-js/web';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import {
@@ -179,12 +179,6 @@ const lightSpec = {
   intensity: 0.42
 } as const;
 
-const skySpec = {
-  'sky-color': '#b9d8e5',
-  'sky-horizon-blend': 0.22,
-  'horizon-color': '#f1c986'
-};
-
 const cameraPresets = [
   {
     id: 'harbor',
@@ -224,6 +218,59 @@ const cameraPresets = [
   }
 ] as const;
 
+const exampleModes = [
+  {
+    id: 'basic',
+    label: 'Basic',
+    title: 'Basic Map',
+    focus: 'Map mount'
+  },
+  {
+    id: 'controls',
+    label: 'Controls',
+    title: 'Map Controls',
+    focus: 'Control components'
+  },
+  {
+    id: 'marker-popup',
+    label: 'Marker Popup',
+    title: 'Marker Popup',
+    focus: 'Overlays'
+  },
+  {
+    id: 'geojson',
+    label: 'GeoJSON',
+    title: 'GeoJSON Layers',
+    focus: 'Source and Layer'
+  },
+  {
+    id: 'controlled',
+    label: 'Controlled',
+    title: 'Controlled Map',
+    focus: 'View state'
+  },
+  {
+    id: 'picking',
+    label: 'Picking',
+    title: 'Feature Picking',
+    focus: 'Interactive layers'
+  },
+  {
+    id: 'terrain',
+    label: 'Terrain',
+    title: 'Terrain Surface',
+    focus: 'Style updates'
+  },
+  {
+    id: 'prototype',
+    label: 'Full Demo',
+    title: 'Operations Demo',
+    focus: 'Integrated flow'
+  }
+] as const;
+
+type ExampleModeId = (typeof exampleModes)[number]['id'];
+
 type FeaturePick = {
   layerId: string;
   name: string;
@@ -261,6 +308,7 @@ function App() {
   let mapStageRef!: HTMLElement;
   let pendingCamera: ViewState | undefined;
   let cameraFrame = 0;
+  const [activeExample, setActiveExample] = createSignal<ExampleModeId>('prototype');
   const [selectedStation, setSelectedStation] = createSignal<(typeof stations)[number]>(stations[1]);
   const [showZone, setShowZone] = createSignal(true);
   const [showPopup, setShowPopup] = createSignal(true);
@@ -281,9 +329,29 @@ function App() {
     width: mapSize().width,
     height: mapSize().height
   }));
-  const interactiveLayerIds = createMemo(() =>
-    showZone() ? ['route-line', 'inspection-zone'] : ['route-line']
+  const currentExample = createMemo(
+    () => exampleModes.find(example => example.id === activeExample()) ?? exampleModes[0]
   );
+  const exampleFlags = createMemo(() => {
+    const mode = activeExample();
+    const prototype = mode === 'prototype';
+    return {
+      controls: mode === 'basic' || mode === 'controls' || mode === 'terrain' || prototype,
+      expandedControls: mode === 'controls' || prototype,
+      route: mode === 'geojson' || mode === 'controlled' || mode === 'picking' || mode === 'terrain' || prototype,
+      zone: mode === 'geojson' || mode === 'picking' || mode === 'terrain' || prototype,
+      markers: mode === 'marker-popup' || mode === 'controlled' || mode === 'picking' || mode === 'terrain' || prototype,
+      camera: mode === 'controlled' || mode === 'terrain' || prototype,
+      picking: mode === 'picking' || prototype,
+      surface: mode === 'terrain' || prototype
+    };
+  });
+  const interactiveLayerIds = createMemo(() => {
+    if (!exampleFlags().picking) {
+      return undefined;
+    }
+    return exampleFlags().zone && showZone() ? ['route-line', 'inspection-zone'] : ['route-line'];
+  });
 
   onMount(() => {
     const updateSize = () => {
@@ -353,6 +421,101 @@ function App() {
     }));
   };
 
+  const updateGlobeProjection = (enabled: boolean) => {
+    batch(() => {
+      if (enabled) {
+        setTerrainEnabled(false);
+      }
+      setGlobeProjection(enabled);
+    });
+  };
+
+  const updateTerrainEnabled = (enabled: boolean) => {
+    batch(() => {
+      if (enabled) {
+        setGlobeProjection(false);
+      }
+      setTerrainEnabled(enabled);
+    });
+  };
+
+  const activateExample = (example: ExampleModeId) => {
+    setActiveExample(example);
+    setHoveredFeature(undefined);
+    setCursor('grab');
+
+    if (example === 'basic' || example === 'controls') {
+      setShowZone(false);
+      setShowPopup(false);
+      setGlobeProjection(false);
+      setTerrainEnabled(false);
+      setCamera(cameraPresets[0].camera);
+      return;
+    }
+
+    if (example === 'marker-popup') {
+      setShowZone(false);
+      setShowPopup(true);
+      setGlobeProjection(false);
+      setTerrainEnabled(false);
+      setSelectedStation(stations[1]);
+      setCamera(cameraPresets[1].camera);
+      return;
+    }
+
+    if (example === 'geojson') {
+      setShowZone(true);
+      setShowPopup(false);
+      setGlobeProjection(false);
+      setTerrainEnabled(false);
+      setCamera(cameraPresets[0].camera);
+      return;
+    }
+
+    if (example === 'controlled') {
+      setShowZone(true);
+      setShowPopup(false);
+      setGlobeProjection(false);
+      setTerrainEnabled(false);
+      setCamera(cameraPresets[0].camera);
+      return;
+    }
+
+    if (example === 'picking') {
+      setShowZone(true);
+      setShowPopup(false);
+      setGlobeProjection(false);
+      setTerrainEnabled(false);
+      setPickedFeature(
+        pickFeature({
+          layer: {id: 'route-line'},
+          properties: routeData.features[0].properties
+        } as MapGeoJSONFeature)
+      );
+      setCamera(cameraPresets[0].camera);
+      return;
+    }
+
+    if (example === 'terrain') {
+      setShowZone(true);
+      setShowPopup(false);
+      setGlobeProjection(false);
+      setTerrainEnabled(true);
+      setCamera({
+        ...cameraPresets[0].camera,
+        pitch: 56,
+        bearing: -32
+      });
+      return;
+    }
+
+    setShowZone(true);
+    setShowPopup(true);
+    setGlobeProjection(true);
+    setTerrainEnabled(false);
+    setCamera(cameraPresets[0].camera);
+  };
+
   return (
     <main class="workbench">
       <section ref={mapStageRef} class="map-stage" aria-label="MapLibre SolidJS prototype">
@@ -363,10 +526,9 @@ function App() {
           minZoom={9}
           maxZoom={16}
           maxPitch={72}
-          projection={globeProjection() ? 'globe' : 'mercator'}
+          projection={exampleFlags().surface && globeProjection() ? 'globe' : 'mercator'}
           light={lightSpec}
-          sky={skySpec}
-          terrain={terrainEnabled() ? terrainSpec : null}
+          terrain={exampleFlags().surface && terrainEnabled() ? terrainSpec : null}
           interactiveLayerIds={interactiveLayerIds()}
           cursor={cursor()}
           ref={map => {
@@ -375,6 +537,13 @@ function App() {
           onMouseDown={() => setCursor('grabbing')}
           onMouseUp={() => setCursor(hoveredFeature() ? 'pointer' : 'grab')}
           onMouseMove={event => {
+            if (!exampleFlags().picking) {
+              setHoveredFeature(undefined);
+              if (cursor() !== 'grabbing') {
+                setCursor('grab');
+              }
+              return;
+            }
             const feature = event.features?.[0];
             setHoveredFeature(feature ? pickFeature(feature) : undefined);
             if (cursor() !== 'grabbing') {
@@ -388,6 +557,9 @@ function App() {
             }
           }}
           onClick={event => {
+            if (!exampleFlags().picking) {
+              return;
+            }
             const feature = event.features?.[0];
             if (feature) {
               setPickedFeature(pickFeature(feature));
@@ -407,43 +579,51 @@ function App() {
             });
           }}
         >
-          <NavigationControl position="top-left" />
-          <FullscreenControl position="top-left" />
-          <ScaleControl position="bottom-left" unit="metric" />
-          <AttributionControl position="bottom-right" compact />
+          <Show when={exampleFlags().controls}>
+            <NavigationControl position="top-left" />
+            <ScaleControl position="bottom-left" unit="metric" />
+          </Show>
+          <Show when={exampleFlags().expandedControls}>
+            <FullscreenControl position="top-left" />
+            <AttributionControl position="bottom-right" compact />
+          </Show>
 
           <Source {...terrainSource} />
 
-          <Show when={showZone()}>
+          <Show when={exampleFlags().zone && showZone()}>
             <Source id="zone" type="geojson" data={zoneData}>
               <Layer {...zoneLayer} />
               <Layer {...zoneOutlineLayer} />
             </Source>
           </Show>
 
-          <Source id="route" type="geojson" data={routeData}>
-            <Layer {...routeLayer} />
-          </Source>
+          <Show when={exampleFlags().route}>
+            <Source id="route" type="geojson" data={routeData}>
+              <Layer {...routeLayer} />
+            </Source>
+          </Show>
 
-          <For each={stations}>
-            {station => (
-              <Marker
-                longitude={station.longitude}
-                latitude={station.latitude}
-                anchor="center"
-                className={`station-marker station-marker-${station.status}`}
-                onClick={() => {
-                  focusStation(station);
-                }}
-              >
-                <button class="station-pin" type="button" aria-label={station.name}>
-                  <span>{station.name.slice(0, 1)}</span>
-                </button>
-              </Marker>
-            )}
-          </For>
+          <Show when={exampleFlags().markers}>
+            <For each={stations}>
+              {station => (
+                <Marker
+                  longitude={station.longitude}
+                  latitude={station.latitude}
+                  anchor="center"
+                  className={`station-marker station-marker-${station.status}`}
+                  onClick={() => {
+                    focusStation(station);
+                  }}
+                >
+                  <button class="station-pin" type="button" aria-label={station.name}>
+                    <span>{station.name.slice(0, 1)}</span>
+                  </button>
+                </Marker>
+              )}
+            </For>
+          </Show>
 
-          <Show when={showPopup()}>
+          <Show when={exampleFlags().markers && showPopup()}>
             <Popup
               longitude={selectedStation().longitude}
               latitude={selectedStation().latitude}
@@ -471,121 +651,151 @@ function App() {
       <aside class="control-panel" aria-label="Prototype controls">
         <div class="panel-head">
           <p>SolidJS MapLibre</p>
-          <h1>Port Operations Prototype</h1>
+          <h1>{currentExample().title}</h1>
         </div>
+
+        <nav class="example-tabs" aria-label="Prototype examples">
+          <For each={exampleModes}>
+            {example => (
+              <button
+                type="button"
+                classList={{active: activeExample() === example.id}}
+                onClick={() => activateExample(example.id)}
+              >
+                {example.label}
+              </button>
+            )}
+          </For>
+        </nav>
 
         <div class="readout">
-          <span>Active station</span>
-          <strong>{selectedStation().name}</strong>
-          <small>{selectedStation().kind}</small>
+          <span>{exampleFlags().markers ? 'Active station' : 'Mode'}</span>
+          <strong>{exampleFlags().markers ? selectedStation().name : currentExample().focus}</strong>
+          <small>{exampleFlags().markers ? selectedStation().kind : currentExample().label}</small>
         </div>
 
-        <div class="feature-board">
-          <div class="feature-pick">
-            <span>{pickedFeature().kind}</span>
-            <strong>{pickedFeature().name}</strong>
-            <small>{pickedFeature().detail}</small>
+        <Show when={exampleFlags().picking}>
+          <div class="feature-board">
+            <div class="feature-pick">
+              <span>{pickedFeature().kind}</span>
+              <strong>{pickedFeature().name}</strong>
+              <small>{pickedFeature().detail}</small>
+            </div>
+            <div class="feature-signal" classList={{live: Boolean(hoveredFeature())}}>
+              <span>Hover</span>
+              <strong>{hoveredFeature()?.name ?? 'Clear'}</strong>
+              <small>{hoveredFeature()?.status ?? pickedFeature().layerId}</small>
+            </div>
           </div>
-          <div class="feature-signal" classList={{live: Boolean(hoveredFeature())}}>
-            <span>Hover</span>
-            <strong>{hoveredFeature()?.name ?? 'Clear'}</strong>
-            <small>{hoveredFeature()?.status ?? pickedFeature().layerId}</small>
-          </div>
-        </div>
+        </Show>
 
-        <div class="camera-board">
-          <div class="camera-metrics">
-            <span>
-              Zoom <strong>{camera().zoom.toFixed(1)}</strong>
-            </span>
-            <span>
-              Bearing <strong>{Math.round(camera().bearing)} deg</strong>
-            </span>
-            <span>
-              Pitch <strong>{Math.round(camera().pitch)} deg</strong>
-            </span>
+        <Show when={exampleFlags().camera}>
+          <div class="camera-board">
+            <div class="camera-metrics">
+              <span>
+                Zoom <strong>{camera().zoom.toFixed(1)}</strong>
+              </span>
+              <span>
+                Bearing <strong>{Math.round(camera().bearing)} deg</strong>
+              </span>
+              <span>
+                Pitch <strong>{Math.round(camera().pitch)} deg</strong>
+              </span>
+            </div>
+            <div class="camera-actions">
+              <For each={cameraPresets}>
+                {preset => (
+                  <button
+                    type="button"
+                    classList={{
+                      active:
+                        Math.abs(camera().longitude - preset.camera.longitude) < 0.001 &&
+                        Math.abs(camera().latitude - preset.camera.latitude) < 0.001
+                    }}
+                    onClick={() => applyCameraPreset(preset)}
+                  >
+                    {preset.label}
+                  </button>
+                )}
+              </For>
+            </div>
           </div>
-          <div class="camera-actions">
-            <For each={cameraPresets}>
-              {preset => (
+        </Show>
+
+        <Show when={exampleFlags().surface}>
+          <div class="surface-board">
+            <div>
+              <span>Projection</span>
+              <strong>{globeProjection() ? 'Globe' : 'Mercator'}</strong>
+            </div>
+            <div>
+              <span>Terrain</span>
+              <strong>{terrainEnabled() ? 'DEM on' : 'Flat'}</strong>
+            </div>
+          </div>
+        </Show>
+
+        <Show when={exampleFlags().surface || exampleFlags().zone || exampleFlags().markers}>
+          <div class="toggles">
+            <Show when={exampleFlags().surface}>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={globeProjection()}
+                  onInput={event => updateGlobeProjection(event.currentTarget.checked)}
+                />
+                <span>Globe projection</span>
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={terrainEnabled()}
+                  onInput={event => updateTerrainEnabled(event.currentTarget.checked)}
+                />
+                <span>Terrain DEM</span>
+              </label>
+            </Show>
+            <Show when={exampleFlags().zone}>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={showZone()}
+                  onInput={event => setShowZone(event.currentTarget.checked)}
+                />
+                <span>Inspection zone</span>
+              </label>
+            </Show>
+            <Show when={exampleFlags().markers}>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={showPopup()}
+                  onInput={event => setShowPopup(event.currentTarget.checked)}
+                />
+                <span>Station popup</span>
+              </label>
+            </Show>
+          </div>
+        </Show>
+
+        <Show when={exampleFlags().markers}>
+          <div class="station-list">
+            <For each={stations}>
+              {station => (
                 <button
                   type="button"
-                  classList={{
-                    active:
-                      Math.abs(camera().longitude - preset.camera.longitude) < 0.001 &&
-                      Math.abs(camera().latitude - preset.camera.latitude) < 0.001
+                  classList={{active: selectedStation().id === station.id}}
+                  onClick={() => {
+                    focusStation(station);
                   }}
-                  onClick={() => applyCameraPreset(preset)}
                 >
-                  {preset.label}
+                  <span>{station.name}</span>
+                  <small>{station.status}</small>
                 </button>
               )}
             </For>
           </div>
-        </div>
-
-        <div class="surface-board">
-          <div>
-            <span>Projection</span>
-            <strong>{globeProjection() ? 'Globe' : 'Mercator'}</strong>
-          </div>
-          <div>
-            <span>Terrain</span>
-            <strong>{terrainEnabled() ? 'DEM on' : 'Flat'}</strong>
-          </div>
-        </div>
-
-        <div class="toggles">
-          <label>
-            <input
-              type="checkbox"
-              checked={globeProjection()}
-              onInput={event => setGlobeProjection(event.currentTarget.checked)}
-            />
-            <span>Globe projection</span>
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={terrainEnabled()}
-              onInput={event => setTerrainEnabled(event.currentTarget.checked)}
-            />
-            <span>Terrain DEM</span>
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={showZone()}
-              onInput={event => setShowZone(event.currentTarget.checked)}
-            />
-            <span>Inspection zone</span>
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={showPopup()}
-              onInput={event => setShowPopup(event.currentTarget.checked)}
-            />
-            <span>Station popup</span>
-          </label>
-        </div>
-
-        <div class="station-list">
-          <For each={stations}>
-            {station => (
-              <button
-                type="button"
-                classList={{active: selectedStation().id === station.id}}
-                onClick={() => {
-                  focusStation(station);
-                }}
-              >
-                <span>{station.name}</span>
-                <small>{station.status}</small>
-              </button>
-            )}
-          </For>
-        </div>
+        </Show>
       </aside>
     </main>
   );

@@ -39,9 +39,9 @@ Status: implemented at the top level.
 | `Layer` | Source inheritance, paint updates, cleanup order, and style reload recreation covered | Add layout/filter/ordering coverage. |
 | Controlled camera | Wrapper and Solid component behavior covered | Keep Playwright prototype smoke checks in the release gate. |
 | Interactive events | Wrapper behavior covered | Keep Playwright picking smoke checks in the release gate. |
-| Style components | Map style, light, terrain, projection, sky, and terrain/globe prototype covered | Split terrain into a focused release example. |
+| Style components | Map style, light, terrain, projection, and sky update tests covered; focused terrain/globe prototype mode added | Keep visual smoke checks in the release gate. |
 | Map reuse | Wrapper and Solid `reuseMaps` behavior covered | Add release example coverage if reuse remains public in examples. |
-| Examples | Prototype only | Split into focused examples before release. |
+| Examples | Focused prototype modes added | Promote selected modes into standalone docs examples before release if needed. |
 
 ## Test Targets
 
@@ -68,3 +68,6 @@ Status: implemented at the top level.
   app.
 - Browser smoke checks with Playwright CLI for terrain and globe projection in
   the prototype app.
+- Browser smoke checks with Playwright CLI for the basic, controls,
+  marker/popup, GeoJSON, controlled, picking, terrain, and full demo prototype
+  modes.
