@@ -114,7 +114,10 @@ operations flow.
 The Phase 5 release gate has passed. Publishing now runs through Changesets:
 open a changeset for releasable package changes, merge the generated version
 PR, and let the release workflow publish `@proyecto-viviana/solidjs-maplibre`
-through npm trusted publishing.
+through npm trusted publishing. The release workflow is hardened so the job with
+npm OIDC authority only downloads a prebuilt tarball and publishes it from the
+`npm` GitHub environment; it does not checkout code, install dependencies, use
+caches, or run package scripts.
 
 See [implementation-roadmap.md](implementation-roadmap.md) for the work order
 and [parity-checklist.md](parity-checklist.md) for the upstream compatibility

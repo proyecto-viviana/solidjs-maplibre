@@ -192,7 +192,16 @@ pnpm run release:publish
 
 The `release` workflow opens Changesets version PRs on `main` and publishes
 `@proyecto-viviana/solidjs-maplibre` through npm trusted publishing after the
-version PR lands.
+version PR lands. The publishing path is intentionally split:
+
+- `version-pr` can write the Changesets version PR, but has no npm OIDC token.
+- `build-package` builds and uploads the package tarball, but has no npm OIDC token.
+- `publish` runs in the `npm` environment with `id-token: write`, but does not
+  checkout the repository, install dependencies, restore caches, or run package
+  scripts. It only downloads the tarball from the same workflow run and calls
+  `npm publish --provenance`.
+- `github-release` creates release metadata after npm publishing, but has no npm
+  OIDC token and does not checkout or install dependencies.
 
 Configure npm trusted publishing from the npm package settings:
 
@@ -200,14 +209,15 @@ Configure npm trusted publishing from the npm package settings:
 - Organization or user: `proyecto-viviana`
 - Repository: `solidjs-maplibre`
 - Workflow filename: `release.yml`
-- Environment name: leave blank unless `.github/workflows/release.yml` adds one
+- Environment name: `npm`
 - Allowed actions: `npm publish`
 
-The release workflow already grants `id-token: write`, upgrades npm for trusted
-publishing, and runs the publish job on a GitHub-hosted runner. No `NPM_TOKEN`
-secret is needed for trusted publishing. For the first package bootstrap, publish
-`@proyecto-viviana/solidjs-maplibre` as public with npm org permissions, or use
-npm's new-package trusted publisher flow if it is available to the org:
+Create a GitHub environment named `npm` for the publish job. Restrict it to
+`main` deployments and add required reviewers if you want a manual release gate.
+No `NPM_TOKEN` secret is needed for trusted publishing. For the first package
+bootstrap, publish `@proyecto-viviana/solidjs-maplibre` as public with npm org
+permissions, or use npm's new-package trusted publisher flow if it is available
+to the org:
 
 ```sh
 pnpm run ci:release-readiness
@@ -217,4 +227,6 @@ npm publish --access public
 See [docs/solid-port-plan.md](docs/solid-port-plan.md) for the porting plan,
 [docs/implementation-roadmap.md](docs/implementation-roadmap.md) for completed
 milestones, and [docs/parity-checklist.md](docs/parity-checklist.md) for the
-upstream parity checklist. See [CHANGELOG.md](CHANGELOG.md) for release notes.
+upstream parity checklist. See [docs/release-security.md](docs/release-security.md)
+for the release hardening model and [CHANGELOG.md](CHANGELOG.md) for release
+notes.
