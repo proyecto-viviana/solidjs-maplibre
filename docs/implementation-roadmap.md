@@ -71,4 +71,14 @@ Goal: finish the compatibility edges before publishing.
 - [x] Expand remaining type parity against upstream.
 - [x] Add focused prototype examples for basic map, controls, marker/popup,
   GeoJSON, controlled map, picking, and terrain.
-- [ ] Run package checks, prototype checks, and publish dry-run checks.
+- [x] Run package checks, prototype checks, and publish dry-run checks.
+
+Release gate commands completed:
+
+- `pnpm run typecheck`
+- `pnpm run typecheck:test`
+- `pnpm run test`
+- `pnpm run build`
+- `pnpm run typecheck:prototype`
+- `pnpm run build:prototype`
+- `pnpm pack --dry-run`
