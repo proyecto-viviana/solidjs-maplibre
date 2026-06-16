@@ -1,9 +1,26 @@
 {
   "name": "solidjs-maplibre",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "SolidJS components for MapLibre GL JS",
   "type": "module",
   "license": "MIT",
+  "homepage": "https://github.com/proyecto-viviana/solidjs-maplibre#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/proyecto-viviana/solidjs-maplibre.git"
+  },
+  "bugs": {
+    "url": "https://github.com/proyecto-viviana/solidjs-maplibre/issues"
+  },
+  "keywords": [
+    "solid",
+    "solid-js",
+    "solidjs",
+    "maplibre",
+    "maplibre-gl",
+    "maps",
+    "webgl"
+  ],
   "files": [
     "dist",
     "src",
@@ -25,10 +42,14 @@
     "build": "tsdown",
     "dev:prototype": "vite --config examples/prototype/vite.config.ts --host 127.0.0.1",
     "build:prototype": "vite build --config examples/prototype/vite.config.ts",
+    "prepack": "pnpm run build",
     "typecheck:prototype": "tsc --noEmit -p examples/prototype/tsconfig.json",
     "typecheck:test": "tsc --noEmit -p tsconfig.test.json",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "peerDependencies": {
     "maplibre-gl": ">=4.0.0",
