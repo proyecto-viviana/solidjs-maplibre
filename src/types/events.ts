@@ -1,24 +1,52 @@
 import type {
-  ErrorEvent,
+  ErrorEvent as MaplibreErrorEvent,
+  GeolocateControl,
   MapDataEvent,
   MapGeoJSONFeature,
   MapLayerMouseEvent,
   MapLayerTouchEvent,
+  MapLibreEvent,
+  MapLibreZoomEvent as MapBoxZoomEvent,
   MapMouseEvent as MaplibreMouseEvent,
+  MapSourceDataEvent,
+  MapStyleDataEvent,
   MapTouchEvent,
   MapWheelEvent
 } from 'maplibre-gl';
-import type {ViewState} from './common';
+import type {LngLat, Point, ViewState} from './common';
 import type {MapInstance, MarkerInstance, PopupInstance} from './lib';
 
-export type MapEvent = {
+export type {
+  MapLayerMouseEvent,
+  MapLayerTouchEvent,
+  MapLibreEvent,
+  MapSourceDataEvent,
+  MapStyleDataEvent,
+  MapTouchEvent,
+  MapWheelEvent,
+  MapBoxZoomEvent
+};
+
+type EventTargeted<SourceT, OriginalEventT = undefined> = {
   type: string;
-  target: MapInstance | null;
-  originalEvent?: Event | null;
-  error?: Error;
-} & Record<string, any>;
+  target: SourceT;
+  originalEvent: OriginalEventT;
+};
+
+export type MapEvent =
+  | (MapLibreEvent & Record<string, any>)
+  | ({
+      type: string;
+      target: MapInstance | null;
+      originalEvent?: Event | null;
+      error?: Error;
+    } & Record<string, any>);
+
+export type ErrorEvent = MaplibreErrorEvent;
 
 export type MapMouseEvent = (MaplibreMouseEvent | MapLayerMouseEvent) & {
+  point: Point;
+  lngLat: LngLat;
   features?: MapGeoJSONFeature[];
 };
 
@@ -30,13 +58,10 @@ export type ViewStateChangeEvent = MapEvent & {
   viewState: ViewState;
 };
 
-export type MarkerEvent<TOriginalEvent = Event> = {
-  type: string;
-  target: MarkerInstance;
-  originalEvent: TOriginalEvent;
-};
+export type MarkerEvent<TOriginalEvent = undefined> = EventTargeted<MarkerInstance, TOriginalEvent>;
 
-export type MarkerDragEvent = MapEvent & {
+export type MarkerDragEvent = MarkerEvent & {
+  type: 'dragstart' | 'drag' | 'dragend';
   target: MarkerInstance;
   lngLat: ReturnType<MarkerInstance['getLngLat']>;
 };
@@ -76,16 +101,22 @@ export type MapCallbacks = {
   onPitch?: (event: ViewStateChangeEvent) => void;
   onPitchEnd?: (event: ViewStateChangeEvent) => void;
   onWheel?: (event: MapWheelEvent) => void;
-  onBoxZoomStart?: (event: MapEvent) => void;
-  onBoxZoomEnd?: (event: MapEvent) => void;
-  onBoxZoomCancel?: (event: MapEvent) => void;
+  onBoxZoomStart?: (event: MapBoxZoomEvent) => void;
+  onBoxZoomEnd?: (event: MapBoxZoomEvent) => void;
+  onBoxZoomCancel?: (event: MapBoxZoomEvent) => void;
   onResize?: (event: MapEvent) => void;
   onLoad?: (event: MapEvent) => void;
   onRender?: (event: MapEvent) => void;
   onIdle?: (event: MapEvent) => void;
   onRemove?: (event: MapEvent) => void;
-  onData?: (event: MapDataEvent) => void;
-  onStyleData?: (event: MapDataEvent) => void;
-  onSourceData?: (event: MapDataEvent) => void;
+  onData?: (event: MapDataEvent | MapStyleDataEvent | MapSourceDataEvent) => void;
+  onStyleData?: (event: MapStyleDataEvent) => void;
+  onSourceData?: (event: MapSourceDataEvent) => void;
   onError?: (event: ErrorEvent | MapEvent) => void;
 };
+
+export type GeolocateEvent = EventTargeted<GeolocateControl>;
+
+export type GeolocateResultEvent = GeolocateEvent & GeolocationPosition;
+
+export type GeolocateErrorEvent = GeolocateEvent & GeolocationPositionError;

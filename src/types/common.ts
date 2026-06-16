@@ -1,17 +1,28 @@
 import type {
+  LngLat,
+  LngLatLike,
+  LngLatBounds,
   LngLatBoundsLike,
   MapGeoJSONFeature,
   PaddingOptions,
+  Point,
   PointLike
 } from 'maplibre-gl';
 
-export type {LngLatBoundsLike, MapGeoJSONFeature, PaddingOptions, PointLike};
-
-export type ImmutableLike<T> = {
-  toJS(): T;
+export type {
+  LngLat,
+  LngLatLike,
+  LngLatBounds,
+  LngLatBoundsLike,
+  MapGeoJSONFeature,
+  PaddingOptions,
+  Point,
+  PointLike
 };
 
-export type Point = PointLike;
+export interface ImmutableLike<T> {
+  toJS(): T;
+}
 
 export type ViewState = {
   longitude: number;

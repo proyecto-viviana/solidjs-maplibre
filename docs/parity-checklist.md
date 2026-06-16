@@ -32,7 +32,7 @@ Status: implemented at the top level.
 | Package build | Implemented | Keep `tsdown` output free of React transforms and bundled peers. |
 | `Map` mount/unmount | Implemented, needs tests | Map ref creation, context publication, cleanup, error handling. |
 | `MapProvider` and `useMap` | Implemented, needs tests | Named maps, `current`, duplicate id guard, unmount cleanup. |
-| Standard controls | Implemented, needs tests | Control add/remove and option updates. |
+| Standard controls | Implemented; geolocate event callbacks covered | Control add/remove and option updates for remaining controls. |
 | `Marker` | Implemented, needs tests | Portal children, DOM style/class updates, popup attachment, drag/click events. |
 | `Popup` | Implemented, needs tests | Portal children, open/close events, style/class updates, position updates. |
 | `Source` | GeoJSON update, cleanup order, and style reload recreation covered | Add image/vector update coverage. |
@@ -62,6 +62,7 @@ Status: implemented at the top level.
 - Direct wrapper tests for `reuseMaps`, recycled container children, restored
   props, restored initial camera, and initial bounds.
 - Solid component tests for remounting with `reuseMaps`.
+- Solid component tests for `GeolocateControl` event callback props.
 - Browser smoke checks with Playwright CLI for the controlled prototype app.
 - Browser smoke checks with Playwright CLI for feature picking in the prototype
   app.
