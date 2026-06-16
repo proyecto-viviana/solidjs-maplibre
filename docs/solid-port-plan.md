@@ -111,8 +111,9 @@ marker/popup overlays, GeoJSON `Source`/`Layer` composition, controlled
 `viewState`, feature picking through `interactiveLayerIds`, globe projection,
 terrain updates through a local raster-dem source, and the full integrated
 operations flow.
-The Phase 5 release gate has passed. Remaining work before an external publish
-is package metadata, versioning, and final release notes.
+The Phase 5 release gate has passed. The package is ready for an external
+publish once the repository state is pushed and the npm publish credentials are
+available.
 
 See [implementation-roadmap.md](implementation-roadmap.md) for the work order
 and [parity-checklist.md](parity-checklist.md) for the upstream compatibility

@@ -180,4 +180,4 @@ pnpm pack --dry-run
 See [docs/solid-port-plan.md](docs/solid-port-plan.md) for the porting plan,
 [docs/implementation-roadmap.md](docs/implementation-roadmap.md) for completed
 milestones, and [docs/parity-checklist.md](docs/parity-checklist.md) for the
-upstream parity checklist.
+upstream parity checklist. See [CHANGELOG.md](CHANGELOG.md) for release notes.
