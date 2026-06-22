@@ -1,5 +1,5 @@
 import {Show, createEffect, createMemo, JSX, onCleanup, onMount, splitProps, useContext} from 'solid-js';
-import {Portal} from 'solid-js/web';
+import {Portal, isServer} from 'solid-js/web';
 import type {PopupEvent} from '../types/events';
 import type {PopupInstance, PopupOptions} from '../types/lib';
 import {applyDomStyle} from '../utils/apply-dom-style';
@@ -21,6 +21,9 @@ export function Popup(props: PopupProps) {
   const context = useContext(MapContext);
   if (!context) {
     throw new Error('<Popup> must be used inside a <Map>');
+  }
+  if (isServer) {
+    return null;
   }
 
   let previousProps: PopupProps = {...props};

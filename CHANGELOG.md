@@ -1,5 +1,11 @@
 # @proyecto-viviana/solidjs-maplibre
 
+## 0.1.1
+
+### Patch Changes
+
+- Add SSR-safe Solid exports with a JSX-preserved entry and server smoke coverage so Solid Start consumers can render routes that import map components.
+
 ## 0.1.0
 
 Initial SolidJS MapLibre port release.

@@ -1,6 +1,6 @@
 {
   "name": "@proyecto-viviana/solidjs-maplibre",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "SolidJS components for MapLibre GL JS",
   "type": "module",
   "license": "MIT",
@@ -32,6 +32,15 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
+      "solid": "./dist/index.jsx",
+      "browser": {
+        "import": "./dist/index.js",
+        "require": "./dist/index.cjs"
+      },
+      "node": {
+        "import": "./dist/server.js",
+        "require": "./dist/server.cjs"
+      },
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     }
@@ -49,7 +58,7 @@
     "changeset:version": "vp exec changeset version && pnpm install --lockfile-only --no-frozen-lockfile --ignore-scripts",
     "changeset:publish": "vp run build && vp exec changeset publish",
     "ci:changesets": "node scripts/check-changeset-required.mjs && node scripts/check-changeset-status.mjs",
-    "ci:release-readiness": "vp run typecheck && vp run typecheck:test && vp run test && vp run build && vp run typecheck:prototype && vp run build:prototype && pnpm pack --dry-run",
+    "ci:release-readiness": "vp run typecheck && vp run typecheck:test && vp run test && vp run build && vp run test:ssr && vp run typecheck:prototype && vp run build:prototype && pnpm pack --dry-run",
     "release:prepare": "vp run changeset:version && vp run ci:release-readiness",
     "release:npm": "vp run changeset:publish",
     "release:publish": "vp run release:npm",
@@ -58,6 +67,7 @@
     "typecheck:prototype": "tsc --noEmit -p examples/prototype/tsconfig.json",
     "typecheck:test": "tsc --noEmit -p tsconfig.test.json",
     "typecheck": "tsc --noEmit",
+    "test:ssr": "node test/ssr-build-smoke.mjs",
     "test": "vp test run"
   },
   "publishConfig": {

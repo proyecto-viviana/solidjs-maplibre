@@ -167,8 +167,9 @@ pnpm run dev:prototype
 
 ## Development
 
-The library build uses `tsdown` with Solid's Rolldown plugin and emits ESM,
-CommonJS, and declaration files into `dist`.
+The library build uses `tsdown` and emits three package entries into `dist`:
+JSX-preserved ESM for the `solid` export condition, DOM-compiled ESM/CommonJS
+fallbacks, and explicit server ESM/CommonJS output for Node consumers.
 
 Release gate commands:
 
@@ -177,10 +178,13 @@ pnpm run typecheck
 pnpm run typecheck:test
 pnpm run test
 pnpm run build
+pnpm run test:ssr
 pnpm run typecheck:prototype
 pnpm run build:prototype
 pnpm pack --dry-run
 ```
+
+`pnpm run ci:release-readiness` runs the same gate used before publishing.
 
 Release workflow commands:
 

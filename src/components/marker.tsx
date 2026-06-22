@@ -1,5 +1,5 @@
 import {Show, createEffect, createMemo, JSX, onCleanup, onMount, splitProps, useContext} from 'solid-js';
-import {Portal} from 'solid-js/web';
+import {Portal, isServer} from 'solid-js/web';
 import type {MarkerEvent, MarkerDragEvent} from '../types/events';
 import type {MarkerInstance, MarkerOptions, PopupInstance} from '../types/lib';
 import {applyDomStyle} from '../utils/apply-dom-style';
@@ -24,6 +24,9 @@ export function Marker(props: MarkerProps) {
   const context = useContext(MapContext);
   if (!context) {
     throw new Error('<Marker> must be used inside a <Map>');
+  }
+  if (isServer) {
+    return null;
   }
 
   let previousProps: MarkerProps = {...props};
